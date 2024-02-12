@@ -1,9 +1,9 @@
 import { createServer, ServerResponse, IncomingMessage } from 'http';
-import { v4 as uuidv4 } from 'uuid';
 import { IUser } from './interfaces/data.interface';
 import { data } from './users/users';
 import { sendResponse } from './utils/sendResponse';
 import { getHandling } from './utils/getHandling';
+import { postHandling } from './utils/postHandling';
 
 export const server = createServer(
   (req: IncomingMessage, res: ServerResponse) => {
@@ -12,15 +12,7 @@ export const server = createServer(
     if (method === 'GET' && url?.startsWith('/api/users')) {
       getHandling(res, url);
     } else if (method === 'POST' && url === '/api/users') {
-      let body = '';
-      req.on('data', chunk => {
-        body += chunk.toString();
-      });
-      req.on('end', () => {
-        const newUser: IUser = { id: uuidv4(), ...JSON.parse(body) };
-        data.users.push(newUser);
-        sendResponse(res, 201, newUser);
-      });
+      postHandling(req, res);
     } else if (method === 'PUT' && url?.startsWith('/api/users/')) {
       const id = url.slice(10); // Удаляем "/api/data/" из URL
       let body = '';
