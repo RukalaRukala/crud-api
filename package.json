@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start:dev": "nodemon --exec ts-node-dev --respawn --transpile-only ./src/index.ts",
-    "start:prod": "tsc && node .dist/index.js",
+    "start:prod": "webpack && node ./dist/bundle.js",
     "test": "jest"
   },
   "devDependencies": {
@@ -28,9 +28,12 @@
     "nodemon": "^3.0.3",
     "prettier": "^3.2.5",
     "ts-jest": "^29.1.2",
+    "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
   }
 }
