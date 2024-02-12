@@ -1,6 +1,6 @@
-import { IUser, IUserUnknown } from '../interfaces/data.interface';
+import { IUserUnknown } from '../interfaces/data.interface';
 
-export function isRightInterface(user: IUserUnknown): user is IUser {
+export function isRightInterface(user: IUserUnknown) {
   return (
     'id' in user &&
     'name' in user &&
