@@ -1,23 +1,16 @@
 import { createServer, ServerResponse, IncomingMessage } from 'http';
 import { v4 as uuidv4 } from 'uuid';
-import { ApiResponse, IUser } from './interfaces/data.interface';
-import { data } from './Users/users';
-
-function sendResponse(
-  res: ServerResponse,
-  statusCode: number,
-  body: ApiResponse
-) {
-  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(body));
-}
+import { IUser } from './interfaces/data.interface';
+import { data } from './users/users';
+import { sendResponse } from './utils/sendResponse';
+import { getHandling } from './utils/getHandling';
 
 export const server = createServer(
   (req: IncomingMessage, res: ServerResponse) => {
     const { method, url } = req;
 
-    if (method === 'GET' && url === '/api/users') {
-      sendResponse(res, 200, data.users);
+    if (method === 'GET' && url?.startsWith('/api/users')) {
+      getHandling(res, url);
     } else if (method === 'POST' && url === '/api/users') {
       let body = '';
       req.on('data', chunk => {
