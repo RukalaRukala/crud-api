@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { IncomingMessage, ServerResponse } from 'http';
 import { sendNewUser } from './sendNewUser';
 import { isInterfaceValid } from './isInterfaceValid';
+import { parseJSON } from './parseJSON';
+import { sendResponse } from './sendResponse';
 
 export function postHandling(req: IncomingMessage, res: ServerResponse) {
   let body = '';
@@ -10,9 +12,13 @@ export function postHandling(req: IncomingMessage, res: ServerResponse) {
     body += chunk.toString();
   });
   req.on('end', () => {
-    const newUser: IUser = { id: uuidv4(), ...JSON.parse(body) };
-    if (isInterfaceValid(res, newUser)) {
-      sendNewUser(res, newUser);
+    try {
+      const newUser: IUser = { id: uuidv4(), ...parseJSON(body) };
+      if (isInterfaceValid(res, newUser)) {
+        sendNewUser(res, newUser);
+      }
+    } catch (err) {
+      sendResponse(res, 404, { error: 'JSON is not valid' });
     }
   });
 }

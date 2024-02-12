@@ -5,6 +5,8 @@ import path from 'path';
 import { addChangesToUser } from './addChangesToUser';
 import { validateId } from './validateId';
 import { isInterfaceValid } from './isInterfaceValid';
+import { parseJSON } from './parseJSON';
+import { sendResponse } from './sendResponse';
 
 export function putHandling(
   req: IncomingMessage,
@@ -18,11 +20,15 @@ export function putHandling(
     body += chunk.toString();
   });
   req.on('end', () => {
-    const newUser: IUser = { id, ...JSON.parse(body) };
-    if (validateId(id, userById, res)) {
-      if (isInterfaceValid(res, newUser)) {
-        addChangesToUser(id, newUser, res);
+    try {
+      const newUser: IUser = { id, ...parseJSON(body) };
+      if (validateId(id, userById, res)) {
+        if (isInterfaceValid(res, newUser)) {
+          addChangesToUser(id, newUser, res);
+        }
       }
+    } catch (err) {
+      sendResponse(res, 404, { error: 'JSON is not valid' });
     }
   });
 }
