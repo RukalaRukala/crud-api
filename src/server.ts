@@ -1,9 +1,9 @@
 import { createServer, ServerResponse, IncomingMessage } from 'http';
-import { IUser } from './interfaces/data.interface';
 import { data } from './users/users';
 import { sendResponse } from './utils/sendResponse';
 import { getHandling } from './utils/getHandling';
 import { postHandling } from './utils/postHandling';
+import { putHandling } from './utils/putHandling';
 
 export const server = createServer(
   (req: IncomingMessage, res: ServerResponse) => {
@@ -14,16 +14,7 @@ export const server = createServer(
     } else if (method === 'POST' && url === '/api/users') {
       postHandling(req, res);
     } else if (method === 'PUT' && url?.startsWith('/api/users/')) {
-      const id = url.slice(10); // Удаляем "/api/data/" из URL
-      let body = '';
-      req.on('data', chunk => {
-        body += chunk.toString();
-      });
-      req.on('end', () => {
-        const newUser: IUser = { ...JSON.parse(body), id };
-        data.users = data.users.map(item => (item.id === id ? newUser : item));
-        sendResponse(res, 200, newUser);
-      });
+      putHandling(req, res, url);
     } else if (method === 'DELETE' && url?.startsWith('/api/users/')) {
       const id = url.slice(10); // Удаляем "/api/data/" из URL
       data.users = data.users.filter(item => item.id !== id);
